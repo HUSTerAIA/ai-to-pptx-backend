@@ -59,3 +59,115 @@
     1 暂时停止了商用版本的开发
     2 何时重新启动, 另行通知
  
+ ---
+
+## 项目概览
+这是一个基于**AI技术自动生成PowerPoint演示文稿**的后端系统，使用**DeepSeek模型**进行内容生成，支持从Markdown大纲到PPTX文件的完整转换流程。
+
+## 核心目录结构分析
+
+### 1. **根目录文件**
+- **config.inc.php** - 核心配置文件
+  - Redis连接配置
+  - DeepSeek API配置(API_URL, API_KEY, API_MODE)
+  - 内置4套PPT模板配置
+  - CORS跨域设置
+
+- **generateOutline.php** - 大纲生成接口
+  - 根据用户输入主题生成PPT大纲
+  - 使用流式输出，实时返回AI生成内容
+  - 生成6个章节，每章节3-5个子章节，每子章节3个小节
+
+- **generateContent.php** - 内容生成接口（核心文件）
+  - 将大纲扩展为详细内容
+  - 实现实时流式生成和进度反馈
+  - 分页处理，支持实时页面计数
+  - 使用Redis缓存生成过程和结果
+
+- **asyncPptInfo.php** - 异步PPT信息获取
+  - 获取PPT生成状态和进度
+  - 模板信息管理
+
+- **downloadPptx.php** - PPTX下载接口
+  - 从Redis获取生成的数据
+  - 调用AiToPPTX库生成实际的PPTX文件
+
+- **downloadPptxFile.php** - 文件下载服务
+- **randomTemplates.php** - 随机模板选择
+- **saveConfig.php** - 配置保存
+
+### 2. **AiToPPTX/ 核心库目录**
+这是项目的核心PPT生成引擎：
+
+- **include.inc.php** - 主要入口文件
+- **`lib/`目录** - 核心功能模块：
+  - functions.inc.php - 基础工具函数
+  - AiToPptx_MakePresentationXml.php - 生成PPT主文档
+  - AiToPptx_MakeSingleSlide.php - 单页幻灯片生成
+  - AiToPptx_MakeThemeXml.php - 主题样式生成
+  - AiToPptx_DrawSingleObject.php - 图形对象绘制
+  - 其他XML结构生成模块
+
+- **`xml/`目录** - PPT的XML模板文件
+
+### 3. **json/ 模板目录**
+包含4套内置PPT模板：
+- 课程学习汇报
+- 读书分享演示  
+- 蓝色通用商务
+- 蓝色工作汇报总结
+
+每套模板包含`.json`配置文件和`.png`预览图
+
+### 4. **example/ 示例目录**
+- generate_pptx_from_json.php - 从JSON生成PPTX的示例
+- `markdown_to_pptx_content_json.php` - Markdown转换示例
+- `redis.php` - Redis使用示例
+
+### 5. **BusinessLicense/ 商业授权目录**
+包含软件商业授权协议文档
+
+## 技术架构特点
+
+### 1. **流式生成架构**
+- 采用Server-Sent Events (SSE)实现实时流式输出
+- 支持生成进度实时反馈
+- 分页处理，避免长时间等待
+
+### 2. **缓存机制**
+- 使用Redis缓存生成过程和结果
+- 支持断点续传和状态恢复
+- 自动清理过期数据
+
+### 3. **模板化设计**
+- 预置多套PPT模板
+- JSON格式模板配置
+- 支持自定义模板扩展
+
+### 4. **AI集成**
+- 集成DeepSeek大语言模型
+- 两阶段生成：大纲生成 → 内容扩展
+- 智能内容结构化处理
+
+## 工作流程
+
+1. **大纲生成阶段** (generateOutline.php)
+   - 用户输入主题 → AI生成结构化大纲
+
+2. **内容扩展阶段** (generateContent.php)  
+   - 大纲内容扩展 → 详细PPT内容生成
+
+3. **PPTX生成阶段** (downloadPptx.php)
+   - JSON数据 → XML结构 → PPTX文件
+
+4. **文件下载** (downloadPptxFile.php)
+   - 提供最终PPTX文件下载
+
+## 部署要求
+- **PHP >= 7.4**
+- **Redis服务器**
+- **PHP扩展**: Redis扩展、Zip扩展  
+- **目录权限**: `./cache`和`./output`目录需要写权限
+- **DeepSeek API Key**配置
+
+这个项目实现了从AI生成内容到最终PPT文件的完整链路，是一个功能完整的AI驱动的PPT生成系统。
