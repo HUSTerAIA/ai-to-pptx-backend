@@ -10,16 +10,16 @@ PPTX文件内部结构/
 ├── _rels/                       # 包级关系文件夹
 │   └── .rels                    # 根关系文件，定义核心文档关系
 ├── docProps/                    # 文档属性文件夹
-│   ├── app.xml                  # 应用程序特定属性
-│   └── core.xml                 # 核心文档属性（标题、作者、创建时间等）
+│   ├── app.xml                  # 应用程序特定属性√
+│   └── core.xml                 # 核心文档属性（标题、作者、创建时间等）√
 └── ppt/                         # 演示文稿主要内容文件夹
     ├── presentation.xml         # 演示文稿主文件，定义幻灯片顺序和全局设置
-    ├── presProps.xml           # 演示文稿属性
-    ├── tableStyles.xml         # 表格样式定义
-    ├── viewProps.xml           # 视图属性设置
+    ├── presProps.xml           # 演示文稿属性√
+    ├── tableStyles.xml         # 表格样式定义√
+    ├── viewProps.xml           # 视图属性设置√
     ├── _rels/                  # 演示文稿关系文件夹
     │   └── presentation.xml.rels # 演示文稿关系文件
-    ├── theme/                  # 主题相关文件夹
+    ├── theme/                  # 主题相关文件夹√
     │   ├── theme1.xml          # 主题定义文件
     │   └── _rels/              # 主题关系文件夹
     │       └── theme1.xml.rels # 主题关系文件
