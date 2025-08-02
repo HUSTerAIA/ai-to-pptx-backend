@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit;
 }
 
-//清除缓存, 请除两天以前的数据, 尽可能使用Redis保持一个小的状态
+//清除缓存, 清除两天以前的数据, 尽可能使用Redis保持一个小的状态
 $date = date('Ymd', strtotime("-2 day"));
 $result = $redis->del("PPTX_CONTENT_" . $date);
 $result = $redis->del("PPTX_OUTLINE_" . $date);

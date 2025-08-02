@@ -23,8 +23,15 @@ require_once(__DIR__.'/lib/AiToPptx_MakeSingleSlide.php');
 require_once(__DIR__.'/lib/AiToPptx_MakeSlideLayout.php');
 require_once(__DIR__.'/lib/AiToPptx_MakeThemeXml.php');
 
-
+// 主要功能文件
 //把JSON数据转换为PPTX文件
+/**
+ * Summary of AiToPptx_MakePptx
+ * @param mixed $JsonData: 包含PPT结构和内容的JSON数据
+ * @param mixed $TargetCacheDir
+ * @param mixed $TargetPptxFilePath
+ * @return void
+ */
 function AiToPptx_MakePptx($JsonData, $TargetCacheDir, $TargetPptxFilePath) {
 
   global $GlobalImageCounter;
@@ -33,6 +40,28 @@ function AiToPptx_MakePptx($JsonData, $TargetCacheDir, $TargetPptxFilePath) {
   if(!is_dir($TargetCacheDir))   mkdir($TargetCacheDir);
   $TargetCacheDir   = realpath($TargetCacheDir);
 
+  /**
+   * 创建标准pptx目录结构
+   *  [Content_Types].xml       - 定义所有内容类型
+   *  _rels/                    - 包级关系文件
+   *  docProps/                 - 文档属性
+   *    core.xml                - 核心属性
+   *    app.xml                 - 应用程序特定属性
+   *  ppt/                      - 演示文稿主要内容
+   *    presentation.xml        - 演示文稿主文件
+   *    presProps.xml           - 演示文稿属性
+   *    tableStyles.xml         - 表格样式
+   *    viewProps.xml           - 视图属性
+   *    theme/                  - 主题相关文件
+   *    slides/                 - 幻灯片内容
+   *      slide1.xml            - 单张幻灯片内容
+   *      _rels/                - 幻灯片关系
+   *    slideLayouts/           - 幻灯片版式
+   *    slideMasters/           - 幻灯片母版
+   *    media/                  - 嵌入的媒体文件
+   *    _rels/                  - 演示文稿关系
+   *  vbaProject.bin             - VBA 二进制内容
+   */
 	// 确保子文件夹都存在
 	if(!is_dir($TargetCacheDir."/_rels")) 		mkdir($TargetCacheDir."/_rels");
 	if(!is_dir($TargetCacheDir."/docProps")) 	mkdir($TargetCacheDir."/docProps");
@@ -72,13 +101,13 @@ function AiToPptx_MakePptx($JsonData, $TargetCacheDir, $TargetPptxFilePath) {
 		//print $MakeSlideLayoutData;
 	}
 
-	// 生成 /ppt/presentation.xml
+	// 生成 /ppt/presentation.xml，演示文稿主文件
 	AiToPptx_MakePresentationXml($JsonData, $TargetCacheDir);
 
-	// 生成 /ppt/_rels/presentation.xml.rels
+	// 生成 /ppt/_rels/presentation.xml.rels，关系文件
 	AiToPptx_MakePresentationXmlRelations($JsonData, $TargetCacheDir);
 
-	// 复制必备文件
+	// 复制必备文件，预先设定
 	copy(__DIR__."/xml/presProps.xml", $TargetCacheDir."/ppt/presProps.xml");
 	copy(__DIR__."/xml/tableStyles.xml", $TargetCacheDir."/ppt/tableStyles.xml");
 	copy(__DIR__."/xml/theme.xml", $TargetCacheDir."/ppt/theme.xml");
@@ -86,13 +115,13 @@ function AiToPptx_MakePptx($JsonData, $TargetCacheDir, $TargetPptxFilePath) {
 	copy(__DIR__."/xml/app.xml", $TargetCacheDir."/docProps/app.xml");
 	copy(__DIR__."/xml/core.xml", $TargetCacheDir."/docProps/core.xml");
 
-	// 生成 /ppt/_rels/presentation.xml.rels
+	// 生成 /ppt/_rels/presentation.xml.rels，关系文件
 	AiToPptx_MakePresentationXmlRelations($JsonData, $TargetCacheDir);
 
-	// 生成 /_rels/.rels
+	// 生成 /_rels/.rels，包级关系文件
 	AiToPptx_MakeRootRelations($JsonData, $TargetCacheDir);
 
-	// 生成 /Content_Types.xml
+	// 生成 /Content_Types.xml，定义所有内容类型
 	AiToPptx_MakeContentTypesXml($JsonData, $TargetCacheDir);
 
 	// 压缩所有文件,并且生成PPTX
@@ -117,10 +146,10 @@ function Markdown_To_Generate_Content_Json($FullResponeText) {
 
   //转为MAP
   $Map    = [];
-  $PPTX标题 = "";
-  $章节标题 = "";
-  $小节标题 = "";
-  $小节内容 = "";
+  $PPTX标题 = "";     // 对应markdown的 #
+  $章节标题 = "";     // 对应markdown的 ## 
+  $小节标题 = "";     // 对应markdown的 ###
+  $小节内容 = "";     // 对应 1.1.1 point 内容
   foreach($FullResponeTextArrayNotNullLine as $Item) {
     if(substr($Item, 0, 2) == '# ') {
       $PPTX标题     = $Item;
@@ -140,7 +169,7 @@ function Markdown_To_Generate_Content_Json($FullResponeText) {
   }
   //print_R($Map);exit;
 
-  //输出为JSON
+  //输出为层级化JSON
   $页面JSON列表 = [];
   foreach($Map[$PPTX标题] as $章节名称 => $章节信息) {
     $章节JSON列表 = [];
@@ -181,6 +210,7 @@ function Markdown_To_Generate_Content_Json($FullResponeText) {
   return $最终结构;
 }
 
+// 得到单个页面的所有文本，按照坐标位置排序
 function 得到单个页面的所有文本($Page) {
 	$PageChildren 	= (array)$Page['children'];
 	//$Page['children'][0]['children'][0]['children'];
@@ -351,6 +381,7 @@ function 得到指定页面的标题列表($指定页面JSON)  {
   return $标题列表;
 }
 
+// 识别标题和内容的位置关系，布局方案匹配
 function 替换内容页($指定页面JSON, $章节小节名称, $章节小节内容, $页面页码)  {
   //print_R($章节小节名称);exit;
   //替换首页信息
@@ -434,6 +465,17 @@ function 替换内容页($指定页面JSON, $章节小节名称, $章节小节�
 }
 
 //把Markdown转为JSON Data
+/**
+ * Summary of Markdown_To_JsonData
+ * @param mixed $OUTLINE 原始大纲
+ * @param mixed $MarkdownData ai扩展后的详细内容
+ * @param mixed $JsonData 模板json数据
+ * @param mixed $Finished
+ * @param mixed $个性化信息
+ * @param mixed $OutPutLastPageId
+ */
+ * 
+ */
 function Markdown_To_JsonData($OUTLINE, $MarkdownData, $JsonData, $Finished, $个性化信息, $OutPutLastPageId) {
   
   $MarkdownData = str_replace("```markdown", "", $MarkdownData);
@@ -550,6 +592,7 @@ function Markdown_To_JsonData($OUTLINE, $MarkdownData, $JsonData, $Finished, $�
     $最终输出页面数据[$StartPage]       = 替换首页或尾页($章节标题页, $章节名称, $章节序号<10 ? "0".$章节序号 : $章节序号, $StartPage+1, $章节名称);
     $StartPage += 1;
     foreach($章节小节列表 as $章节小节名称 => $章节小节内容)  {
+      // 模板匹配
       //二组标题和内容
       if(sizeof($章节小节内容) == 4 && isset($得到所有的内容明细页面Data[5]) )  {
         $内容页                         = array_shift($得到所有的内容明细页面Data[5]);

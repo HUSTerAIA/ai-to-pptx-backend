@@ -21,7 +21,7 @@ $_POST['action']  = 'stream';
 
 if($_POST['action'] == 'stream' && $_POST['subject'] != '')   {
 
-    $subject = $_POST['subject'];
+    $subject = $_POST['subject'];       // 用户输入
 
     $promptText = "
         请为“".$subject."”生成一个详细的PPT大纲, 涵盖内容请根据topic提供的信息生成一份与时俱进的完美的ppt大纲。
@@ -72,6 +72,7 @@ if($_POST['action'] == 'stream' && $_POST['subject'] != '')   {
     ];
     $CURLOPT_POSTFIELDS = json_encode($CURLOPT_POSTFIELDS, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
+    // LLM请求
     curl_setopt_array($curl, array(
         CURLOPT_URL => $API_URL . '/chat/completions',
         CURLOPT_RETURNTRANSFER => false,

@@ -14,6 +14,7 @@ $allowedOrigins[] = 'http://localhost:3000';
 $allowedOrigins[] = 'http://localhost:3000/';
 
 // #################################################################################
+// 配置：redis，ppt模板映射，api
 $redis = new Redis();
 $redis->connect('127.0.0.1', 6379);
 
