@@ -8,6 +8,12 @@
 * Version: 0.0.1
 */
 
+/**
+ * 
+ * @param mixed $childrenItem
+ * @param mixed $DirPath
+ * @return bool|DOMElement
+ */
 function AiToPptx_DrawSingleObject($childrenItem, $DirPath)  {
 	global $SharpCounter;
 	$Type 			= $childrenItem['type'];

@@ -42,25 +42,47 @@ function AiToPptx_MakePptx($JsonData, $TargetCacheDir, $TargetPptxFilePath) {
 
   /**
    * 创建标准pptx目录结构
-   *  [Content_Types].xml       - 定义所有内容类型
-   *  _rels/                    - 包级关系文件
-   *  docProps/                 - 文档属性
-   *    core.xml                - 核心属性
-   *    app.xml                 - 应用程序特定属性
-   *  ppt/                      - 演示文稿主要内容
-   *    presentation.xml        - 演示文稿主文件
-   *    presProps.xml           - 演示文稿属性
-   *    tableStyles.xml         - 表格样式
-   *    viewProps.xml           - 视图属性
-   *    theme/                  - 主题相关文件
-   *    slides/                 - 幻灯片内容
-   *      slide1.xml            - 单张幻灯片内容
-   *      _rels/                - 幻灯片关系
-   *    slideLayouts/           - 幻灯片版式
-   *    slideMasters/           - 幻灯片母版
-   *    media/                  - 嵌入的媒体文件
-   *    _rels/                  - 演示文稿关系
-   *  vbaProject.bin             - VBA 二进制内容
+   *  ├── [Content_Types].xml          # 定义所有内容类型和文件扩展名映射
+   *  ├── _rels/                       # 包级关系文件夹
+   *  │   └── .rels                    # 根关系文件，定义核心文档关系
+   *  ├── docProps/                    # 文档属性文件夹
+   *  │   ├── app.xml                  # 应用程序特定属性√
+   *  │   └── core.xml                 # 核心文档属性（标题、作者、创建时间等）√
+   *  └── ppt/                         # 演示文稿主要内容文件夹
+   *      ├── presentation.xml         # 演示文稿主文件，定义幻灯片顺序和全局设置
+   *      ├── presProps.xml           # 演示文稿属性√
+   *      ├── tableStyles.xml         # 表格样式定义√
+   *      ├── viewProps.xml           # 视图属性设置√
+   *      ├── _rels/                  # 演示文稿关系文件夹
+   *      │   └── presentation.xml.rels # 演示文稿关系文件
+   *      ├── theme/                  # 主题相关文件夹√
+   *      │   ├── theme1.xml          # 主题定义文件
+   *      │   └── _rels/              # 主题关系文件夹
+   *      │       └── theme1.xml.rels # 主题关系文件
+   *      ├── slides/                 # 幻灯片内容文件夹
+   *      │   ├── slide1.xml          # 第1张幻灯片内容
+   *      │   ├── slide2.xml          # 第2张幻灯片内容
+   *      │   ├── slideN.xml          # 第N张幻灯片内容
+   *      │   └── _rels/              # 幻灯片关系文件夹
+   *      │       ├── slide1.xml.rels # 第1张幻灯片关系
+   *      │       ├── slide2.xml.rels # 第2张幻灯片关系
+   *      │       └── slideN.xml.rels # 第N张幻灯片关系
+   *      ├── slideLayouts/           # 幻灯片版式文件夹
+   *      │   ├── slideLayout1.xml    # 版式1定义
+   *      │   ├── slideLayout2.xml    # 版式2定义
+   *      │   ├── slideLayoutN.xml    # 版式N定义
+   *      │   └── _rels/              # 版式关系文件夹
+   *      │       ├── slideLayout1.xml.rels # 版式1关系
+   *      │       ├── slideLayout2.xml.rels # 版式2关系
+   *      │       └── slideLayoutN.xml.rels # 版式N关系
+   *      ├── slideMasters/           # 幻灯片母版文件夹
+   *      │   ├── slideMaster1.xml    # 母版1定义
+   *      │   └── _rels/              # 母版关系文件夹
+   *      │       └── slideMaster1.xml.rels # 母版1关系
+   *      └── media/                  # 嵌入媒体文件夹
+   *          ├── image1.png          # 图片文件1
+   *          ├── image2.jpg          # 图片文件2
+   *          └── imageN.ext          # 其他媒体文件
    */
 	// 确保子文件夹都存在
 	if(!is_dir($TargetCacheDir."/_rels")) 		mkdir($TargetCacheDir."/_rels");
@@ -116,7 +138,7 @@ function AiToPptx_MakePptx($JsonData, $TargetCacheDir, $TargetPptxFilePath) {
 	copy(__DIR__."/xml/core.xml", $TargetCacheDir."/docProps/core.xml");
 
 	// 生成 /ppt/_rels/presentation.xml.rels，关系文件
-	AiToPptx_MakePresentationXmlRelations($JsonData, $TargetCacheDir);
+	// AiToPptx_MakePresentationXmlRelations($JsonData, $TargetCacheDir);
 
 	// 生成 /_rels/.rels，包级关系文件
 	AiToPptx_MakeRootRelations($JsonData, $TargetCacheDir);
@@ -473,8 +495,6 @@ function 替换内容页($指定页面JSON, $章节小节名称, $章节小节�
  * @param mixed $Finished
  * @param mixed $个性化信息
  * @param mixed $OutPutLastPageId
- */
- * 
  */
 function Markdown_To_JsonData($OUTLINE, $MarkdownData, $JsonData, $Finished, $个性化信息, $OutPutLastPageId) {
   

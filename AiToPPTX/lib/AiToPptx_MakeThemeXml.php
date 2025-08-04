@@ -18,7 +18,7 @@ function AiToPptx_MakeThemeXml($slideMasters, $DirPath)  {
 	$dom->formatOutput = true; // 格式化输出
 	$dom->preserveWhiteSpace = false; // 忽略不必要的空白
 	// 加载theme模板文件
-	$dom->load(__DIR__.'/../xml/theme.xml');
+	$dom->load(__DIR__.'/../xml/theme.xml');		// 使用theme.xml作为基础模板
 
 	$theme 				= $slideMasters[0]['theme'];
 	$colorsThemeList 	= (array)$theme['colors'];

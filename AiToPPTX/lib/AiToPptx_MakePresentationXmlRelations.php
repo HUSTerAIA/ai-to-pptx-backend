@@ -10,7 +10,7 @@
 
 function AiToPptx_MakePresentationXmlRelations($JsonData, $写入文件目录)  {
 	$pages = $JsonData['pages'];
-	$$MakePresentationXmlList = [];
+	$MakePresentationXmlList = [];
 	for($i=0;$i<sizeof($pages);$i++) {
 		$MakePresentationXmlList[] = '<Relationship Id="rId'.($i+6).'" Target="slides/slide'.($i+1).'.xml" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide"/>';
 	}

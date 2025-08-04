@@ -47,6 +47,9 @@ function AiToPptx_DeleteCacheDirectory($dir) {
   return rmdir($dir);
 }
 
+/**
+ * 生成zip
+ */
 function AiToPptx_CreateZip($source, $destination) {
     if (!extension_loaded('zip') || !file_exists($source)) {
         return false;
